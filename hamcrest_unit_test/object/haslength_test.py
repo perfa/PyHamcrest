@@ -4,6 +4,7 @@ if __name__ == '__main__':
     sys.path.insert(0, '../..')
 
 from hamcrest.library.object.haslength import *
+from hamcrest.core.assert_that import assert_that
 
 from hamcrest.core.core.isequal import equal_to
 from hamcrest.library.number.ordering_comparison import greater_than
@@ -69,8 +70,14 @@ class HasLengthTest(MatcherTest):
     def testDescribeMismatchForItemWithoutLength(self):
         self.assert_describe_mismatch("was <FakeWithoutLen>",
                                       has_length(3), FakeWithoutLen())
-
-
+def bandfunc(_arg, arg2=None):
+    raise ValueError("hahaha")
+calling = Raiser
+raises = Raises
+class RaisesTest(MatcherTest):
+    def test1(self):
+        assert_that(calling(bandfunc, "ham", arg2=3), raises(ValueError))
+        assert_that(calling(bandfunc).with_("pork", arg2=45), raises(ValueError))
 
 if __name__ == '__main__':
     unittest.main()

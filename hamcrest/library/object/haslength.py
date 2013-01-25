@@ -6,6 +6,41 @@ __author__ = "Jon Reid"
 __copyright__ = "Copyright 2011 hamcrest.org"
 __license__ = "BSD, see License.txt"
 
+class Raiser(object):
+    def __init__(self, func, *args, **kwargs):
+        assert callable(func)
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+
+    def with_(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        return self
+
+    def execute(self):
+        self.func(*self.args, **self.kwargs)
+
+class Raises(BaseMatcher):
+    def __init__(self, exception):
+        self.expected = exception
+        self.actual = None
+
+    def _matches(self, raiser):
+        if not isinstance(raiser, Raiser):
+            return False
+        try:
+            raiser.execute()
+        except Exception as err:
+            self.actual = err
+            if type(err) == self.expected:
+                return True
+            return False
+        else:
+            return False
+
+    def describe_mismatch(self, item, mismatch_description):
+        mismatch_description.append_text('Expected %s but got: %s' % (self.expected, type(self.actual)))
 
 class HasLength(BaseMatcher):
 
